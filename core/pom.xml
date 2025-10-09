@@ -161,9 +161,11 @@
                 <configuration>
                     <targetClasses>
                         <param>com.graphhopper.routing.util.FerrySpeedCalculator</param>
+                        <param>com.graphhopper.util..shapes.Circle</param>
                     </targetClasses>
                     <targetTests>
                         <param>com.graphhopper.routing.util.FerrySpeedCalculatorTest</param>
+                        <param>com.graphhopper.util.shapes.CircleTest</param>
                     </targetTests>
                     <!-- SUPPRIMEZ CETTE LIGNE : <mutationEngine>descartes</mutationEngine> -->
                     <outputFormats>
