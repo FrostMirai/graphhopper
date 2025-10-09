@@ -36,12 +36,6 @@
     </licenses>
     <dependencies>
         <dependency>
-            <groupId>com.github.javafaker</groupId>
-            <artifactId>javafaker</artifactId>
-            <version>1.0.2</version>
-            <scope>test</scope>
-        </dependency>
-        <dependency>
             <groupId>com.graphhopper</groupId>
             <artifactId>graphhopper-web-api</artifactId>
             <version>${project.parent.version}</version>
@@ -125,17 +119,18 @@
             <artifactId>logback-classic</artifactId>
             <scope>test</scope>
         </dependency>
+
+        <dependency>
+            <groupId>com.github.javafaker</groupId>
+            <artifactId>javafaker</artifactId>
+            <version>1.0.2</version>
+            <scope>test</scope>
+        </dependency>
     </dependencies>
 
     <build>
         <pluginManagement>
             <plugins>
-
-                <plugin>
-                    <groupId>org.pitest</groupId>
-                    <artifactId>pitest-maven</artifactId>
-                    <version>LATEST</version>
-                </plugin>
                 <!-- create jar with test classes to be reused in other projects -->
                 <plugin>
                     <groupId>org.apache.maven.plugins</groupId>
@@ -159,6 +154,36 @@
         </pluginManagement>
 
         <plugins>
+            <plugin>
+                <groupId>org.pitest</groupId>
+                <artifactId>pitest-maven</artifactId>
+                <version>1.15.0</version>
+                <configuration>
+                    <targetClasses>
+                        <param>com.graphhopper.routing.util.FerrySpeedCalculator</param>
+                    </targetClasses>
+                    <targetTests>
+                        <param>com.graphhopper.routing.util.FerrySpeedCalculatorTest</param>
+                    </targetTests>
+                    <!-- SUPPRIMEZ CETTE LIGNE : <mutationEngine>descartes</mutationEngine> -->
+                    <outputFormats>
+                        <outputFormat>HTML</outputFormat>
+                        <outputFormat>XML</outputFormat>
+                    </outputFormats>
+                    <mutators>
+                        <mutator>DEFAULTS</mutator>
+                    </mutators>
+                    <timeoutConstant>5000</timeoutConstant>
+                    <failWhenNoMutations>false</failWhenNoMutations>
+                </configuration>
+                <dependencies>
+                    <dependency>
+                        <groupId>org.pitest</groupId>
+                        <artifactId>pitest-junit5-plugin</artifactId>
+                        <version>1.2.0</version>
+                    </dependency>
+                </dependencies>
+            </plugin>
             <plugin>
                 <groupId>pl.project13.maven</groupId>
                 <artifactId>git-commit-id-plugin</artifactId>
