@@ -36,6 +36,12 @@
     </licenses>
     <dependencies>
         <dependency>
+            <groupId>com.github.javafaker</groupId>
+            <artifactId>javafaker</artifactId>
+            <version>1.0.2</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
             <groupId>com.graphhopper</groupId>
             <artifactId>graphhopper-web-api</artifactId>
             <version>${project.parent.version}</version>
@@ -124,6 +130,12 @@
     <build>
         <pluginManagement>
             <plugins>
+
+                <plugin>
+                    <groupId>org.pitest</groupId>
+                    <artifactId>pitest-maven</artifactId>
+                    <version>LATEST</version>
+                </plugin>
                 <!-- create jar with test classes to be reused in other projects -->
                 <plugin>
                     <groupId>org.apache.maven.plugins</groupId>

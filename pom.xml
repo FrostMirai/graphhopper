@@ -175,6 +175,33 @@
         <pluginManagement>
             <plugins>
                 <plugin>
+                    <groupId>org.pitest</groupId>
+                    <artifactId>pitest-maven</artifactId>
+                    <version>1.15.0</version> <!-- vérifier la dernière version sur Maven Central -->
+                    <configuration>
+                        <!-- Package(s) à analyser -->
+                        <targetClasses>
+                            <param>com.graphhopper.routing.*</param>
+                        </targetClasses>
+                        <!-- Test(s) à exécuter -->
+                        <targetTests>
+                            <param>com.graphhopper.routing.*Test</param>
+                        </targetTests>
+                        <!-- Timeout pour chaque mutant (ms) -->
+                        <mutationThreshold>80</mutationThreshold>
+                        <coverageThreshold>80</coverageThreshold>
+                        <!-- Mutateurs à utiliser, par défaut suffisant -->
+                        <mutators>
+                            <mutator>DEFAULTS</mutator>
+                        </mutators>
+                        <!-- Génération du rapport -->
+                        <outputFormats>
+                            <param>HTML</param>
+                        </outputFormats>
+                    </configuration>
+                </plugin>
+
+                <plugin>
                     <groupId>org.apache.maven.plugins</groupId>
                     <artifactId>maven-compiler-plugin</artifactId>
                     <version>3.8.1</version>
