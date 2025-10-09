@@ -311,7 +311,7 @@ public class CircleTest {
         Circle insideCircle = new Circle(0.1, 0.1, 50000);
         assertTrue(mainCircle.contains(insideCircle));
         
-        // Cercle qui touche juste les bords - CORRECTION: doit être plus petit
+        // Cercle qui touche juste les bords 
         // Pour qu'un cercle soit contenu, la distance entre centres + rayon du petit doit être <= rayon du grand
         Circle tangentCircle = new Circle(0.4, 0, 10000); // Plus proche et plus petit
         assertTrue(mainCircle.contains(tangentCircle));
