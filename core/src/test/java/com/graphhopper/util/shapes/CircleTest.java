@@ -221,9 +221,6 @@ public class CircleTest {
     }
 
 
-
-
-
     // ==============================================
     // TESTS CIBLÉS POUR AMÉLIORER LA COUVERTURE DES MUTANTS
     // ==============================================

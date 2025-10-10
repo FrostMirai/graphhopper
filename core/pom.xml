@@ -160,23 +160,16 @@
                 <version>1.15.0</version>
                 <configuration>
                     <targetClasses>
-                        <param>com.graphhopper.routing.util.FerrySpeedCalculator</param>
-                        <param>com.graphhopper.util..shapes.Circle</param>
+                        <param>com.graphhopper.util.shapes.Circle</param>
                     </targetClasses>
                     <targetTests>
-                        <param>com.graphhopper.routing.util.FerrySpeedCalculatorTest</param>
                         <param>com.graphhopper.util.shapes.CircleTest</param>
                     </targetTests>
-                    <!-- SUPPRIMEZ CETTE LIGNE : <mutationEngine>descartes</mutationEngine> -->
                     <outputFormats>
                         <outputFormat>HTML</outputFormat>
                         <outputFormat>XML</outputFormat>
                     </outputFormats>
-                    <mutators>
-                        <mutator>DEFAULTS</mutator>
-                    </mutators>
-                    <timeoutConstant>5000</timeoutConstant>
-                    <failWhenNoMutations>false</failWhenNoMutations>
+                    <verbose>true</verbose>
                 </configuration>
                 <dependencies>
                     <dependency>
