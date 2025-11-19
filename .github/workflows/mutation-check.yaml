@@ -1,0 +1,62 @@
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0 
+
+      - name: Set up JDK
+        uses: actions/setup-java@v4
+        with:
+          java-version: '17'
+          distribution: 'temurin'
+          cache: 'maven'
+
+      - name: Build core (skip tests)
+        run: mvn install -DskipTests -Dmaven.javadoc.skip=true -B -V
+
+
+      - name: Mutation Score in MASTER branch
+        id: baseline_score
+        run: |
+
+          git checkout master
+          
+          echo "Running Pitest on Master..."
+          mvn org.pitest:pitest-maven:mutationCoverage -pl core -DmutationThreshold=0 > pitest_master.log 2>&1
+          
+          SCORE_MASTER=$(grep -o "Killed [0-9]* ([0-9]*%)" pitest_master.log | tail -1 | sed 's/.*(\([0-9]*\)%).*/\1/')
+
+          if [ -z "$SCORE_MASTER" ]; then SCORE_MASTER=0; fi
+          
+          echo "Master Mutation Score: $SCORE_MASTER%"
+          echo "SCORE_MASTER=$SCORE_MASTER" >> $GITHUB_ENV
+
+      - name: Mutation Score in CURRENT branch
+        id: current_score
+        run: |
+
+          git checkout -
+
+          echo "Running Pitest on Current Branch..."
+          mvn org.pitest:pitest-maven:mutationCoverage -pl core -DmutationThreshold=0 > pitest_current.log 2>&1
+
+          SCORE_CURRENT=$(grep -o "Killed [0-9]* ([0-9]*%)" pitest_current.log | tail -1 | sed 's/.*(\([0-9]*\)%).*/\1/')
+          
+          if [ -z "$SCORE_CURRENT" ]; then SCORE_CURRENT=0; fi
+          
+          echo "Current Mutation Score: $SCORE_CURRENT%"
+          echo "SCORE_CURRENT=$SCORE_CURRENT" >> $GITHUB_ENV
+
+      - name: Compare Scores and Fail if Regression
+        run: |
+          echo "Baseline (Master): ${{ env.SCORE_MASTER }}%"
+          echo "Current (PR): ${{ env.SCORE_CURRENT }}%"
+          
+          if [ "${{ env.SCORE_CURRENT }}" -lt "${{ env.SCORE_MASTER }}" ]; then
+            echo "FAILURE: Mutation score dropped from ${{ env.SCORE_MASTER }}% to ${{ env.SCORE_CURRENT }}%."
+            exit 1
+          else
+            echo "SUCCESS: Mutation score is equal or better."
+          fi
