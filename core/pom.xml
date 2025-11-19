@@ -165,6 +165,8 @@
                     <targetTests>
                         <param>com.graphhopper.util.shapes.CircleTest</param>
                     </targetTests>
+                    <mutationThreshold>0</mutationThreshold> 
+                    <coverageThreshold>0</coverageThreshold>
                     <outputFormats>
                         <outputFormat>HTML</outputFormat>
                         <outputFormat>XML</outputFormat>
