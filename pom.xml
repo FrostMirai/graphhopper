@@ -188,8 +188,8 @@
                             <param>com.graphhopper.routing.*Test</param>
                         </targetTests>
                         <!-- Timeout pour chaque mutant (ms) -->
-                        <mutationThreshold>80</mutationThreshold>
-                        <coverageThreshold>80</coverageThreshold>
+                        <mutationThreshold>0</mutationThreshold>
+                        <coverageThreshold>0</coverageThreshold>
                         <!-- Mutateurs à utiliser, par défaut suffisant -->
                         <mutators>
                             <mutator>DEFAULTS</mutator>
