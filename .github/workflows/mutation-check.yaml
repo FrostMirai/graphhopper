@@ -73,3 +73,11 @@ jobs:
           else
             echo "Mutation score is equal or better."
           fi
+
+        
+      # -------------------------
+      # Rickroll
+      # -------------------------  
+      - name: Rickroll on mutation regression
+        if: failure()
+        uses: TejasvOnly/random-rickroll@main
