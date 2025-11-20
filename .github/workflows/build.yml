@@ -27,21 +27,9 @@ jobs:
       - name: Build ${{ matrix.java-version }}
         run: mvn -B clean test
 
-<<<<<<< Updated upstream
-      ###########################################################################
-      # 1. Run PIT mutation testing
-      ###########################################################################
       - name: Run PIT mutation coverage
         run: mvn -q org.pitest:pitest-maven:mutationCoverage
 
-      ###########################################################################
-      # 2. Extract mutation score from PIT report
-      ###########################################################################
-=======
-      - name: Run PIT mutation coverage
-        run: mvn -q org.pitest:pitest-maven:mutationCoverage
-
->>>>>>> Stashed changes
       - name: Extract current mutation score
         id: pit
         run: |
@@ -49,12 +37,6 @@ jobs:
           echo "SCORE_CURRENT=$SCORE_CURRENT" >> $GITHUB_ENV
           echo "Current mutation score: $SCORE_CURRENT%"
 
-<<<<<<< Updated upstream
-      ###########################################################################
-      # 3. Compare with reference score stored in repo (.pit-score)
-      ###########################################################################
-=======
->>>>>>> Stashed changes
       - name: Compare mutation score with baseline
         run: |
           SCORE_BASELINE=$(cat .pit-score)
@@ -66,8 +48,3 @@ jobs:
           else
             echo "Mutation score OK (no regression)."
           fi
-
-<<<<<<< Updated upstream
-
-=======
->>>>>>> Stashed changes
