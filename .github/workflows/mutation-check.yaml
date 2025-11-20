@@ -80,4 +80,5 @@ jobs:
       # -------------------------  
       - name: Rickroll on mutation regression
         if: failure()
-        uses: TejasvOnly/random-rickroll@main
+        uses: TejasvOnly/random-rickroll@v1.0
+
