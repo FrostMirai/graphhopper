@@ -1,0 +1,75 @@
+name: Mutation check
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+
+jobs:
+  mutation-test:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout current branch
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Set up JDK
+        uses: actions/setup-java@v4
+        with:
+          java-version: '17'
+          distribution: 'temurin'
+          cache: 'maven'
+
+
+
+      - name: Checkout master branch
+        run: |
+          git clone --depth 1 --branch master https://github.com/${{ github.repository }} baseline
+
+      - name: Build & run PIT on baseline
+        working-directory: baseline
+        run: |
+          mvn -q install -DskipTests -B
+          mvn -q -pl core org.pitest:pitest-maven:mutationCoverage
+
+      - name: Baseline mutation score
+        id: baseline
+        run: |
+          file=$(find baseline/core/target/pit-reports -name "index.html" | head -n 1)
+          echo "Using baseline PIT report: $file"
+          SCORE_BASE=$(grep -oP '<td>\K[0-9]+(?=%)' "$file" | sed -n '2p')
+          echo "Baseline mutation score: $SCORE_BASE%"
+          echo "base=$SCORE_BASE" >> $GITHUB_OUTPUT
+
+
+
+
+      - name: Build & run PIT on current
+        run: |
+          mvn -q install -DskipTests -B
+          mvn -q -pl core org.pitest:pitest-maven:mutationCoverage
+
+      - name: Current mutation score
+        id: current
+        run: |
+          file=$(find core/target/pit-reports -name "index.html" | head -n 1)
+          echo "Using current PIT report: $file"
+          SCORE_CUR=$(grep -oP '<td>\K[0-9]+(?=%)' "$file" | sed -n '2p')
+          echo "Current mutation score: $SCORE_CUR%"
+          echo "cur=$SCORE_CUR" >> $GITHUB_OUTPUT
+
+      # -------------------------
+      # Compare scores
+      # -------------------------
+      - name: Compare scores
+        run: |
+          echo "Baseline score = ${{ steps.baseline.outputs.base }}%"
+          echo "Current  score = ${{ steps.current.outputs.cur }}%"
+          if [ ${{ steps.current.outputs.cur }} -lt ${{ steps.baseline.outputs.base }} ]; then
+            echo "Mutation score dropped! Fail."
+            exit 1
+          else
+            echo "Mutation score is equal or better."
+          fi
