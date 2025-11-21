@@ -60,9 +60,8 @@ jobs:
           echo "Current mutation score: $SCORE_CUR%"
           echo "cur=$SCORE_CUR" >> $GITHUB_OUTPUT
 
-      # -------------------------
-      # Compare scores
-      # -------------------------
+
+      # Compare basline and current scores
       - name: Compare scores
         run: |
           echo "Baseline score = ${{ steps.baseline.outputs.base }}%"
@@ -75,12 +74,11 @@ jobs:
           fi
 
         
-      # -------------------------
-      # Rickroll
-      # -------------------------  
+      # Rickroll  
       - name: Rickroll on failure
         if: failure()
         uses: TejasvOnly/random-rickroll@v1.0
+
 
 
 
