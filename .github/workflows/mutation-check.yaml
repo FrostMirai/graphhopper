@@ -2,7 +2,7 @@ name: Mutation check
 
 on:
   push:
-    branches: [ main ]
+    branches: [ master ]
   pull_request:
 
 jobs:
@@ -81,5 +81,6 @@ jobs:
       - name: Rickroll on failure
         if: failure()
         uses: TejasvOnly/random-rickroll@v1.0
+
 
 
