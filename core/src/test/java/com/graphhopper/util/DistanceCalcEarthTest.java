@@ -19,13 +19,10 @@ package com.graphhopper.util;
 
 import com.graphhopper.util.shapes.GHPoint;
 import org.junit.jupiter.api.Test;
-import org.mockito.MockedStatic;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.anyDouble;
 import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.mockStatic;
-import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -431,5 +428,28 @@ public class DistanceCalcEarthTest {
         // Vérifier que la méthode a été appelée
         verify(mockedCalc, times(1))
             .calcNormalizedEdgeDistance(0, 0, 0, 0, 0, 0);
+    }
+
+    @Test
+    public void testCalcDistanceWithMockedPointList() {
+        DistanceCalcEarth calc = new DistanceCalcEarth();
+
+        PointList mockPointList = mock(PointList.class);
+
+        when(mockPointList.size()).thenReturn(2);
+        when(mockPointList.is3D()).thenReturn(false);
+
+        // First point : Montréal
+        when(mockPointList.getLat(0)).thenReturn(45.5017);
+        when(mockPointList.getLon(0)).thenReturn(-73.5673);
+
+        // Second point : Québec
+        when(mockPointList.getLat(1)).thenReturn(46.8139);
+        when(mockPointList.getLon(1)).thenReturn(-71.2080);
+
+        double result = calc.calcDistance(mockPointList);
+
+        // distance approximative Montréal–Québec en mètres ≈ 233000 m
+        assertTrue(result > 200_000 && result < 260_000);
     }
 }
