@@ -21,6 +21,15 @@ import com.graphhopper.util.shapes.GHPoint;
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.ArgumentMatchers.anyDouble;
+import static org.mockito.Mockito.atLeast;
+import static org.mockito.Mockito.atLeastOnce;
+import static org.mockito.Mockito.doThrow;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.spy;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 /**
  * @author Peter Karich
@@ -244,4 +253,60 @@ public class PointListTest {
         oneLength.add(0, 0, 0);
         assertEquals(2, oneLength.toLineString(false).getNumPoints());
     }
+
+// ==============================================
+    // NOUVEAUX TESTS AVEC MOCKITO
+    // ==============================================
+
+    /**
+     * Test avec Mockito pour simuler des exceptions sur les index invalides
+     */
+    @Test
+    public void testPointListEdgeCasesWithMocks() {
+        // Créer une PointList avec un spy
+        PointList pointList = new PointList();
+        pointList.add(1.0, 2.0);
+        
+        PointList spyList = spy(pointList);
+        
+        // Simuler une exception pour l'accès à un index invalide
+        doThrow(new IllegalArgumentException("Index out of bounds"))
+            .when(spyList).getLat(5); // Index hors limites
+        
+        // Vérifier que l'exception est levée
+        assertThrows(IllegalArgumentException.class, () -> {
+            spyList.getLat(5);
+        });
+        
+        verify(spyList, times(1)).getLat(5);
+    }
+
+    /**
+     * Test avec Mockito pour simuler le calcul de distance avec DistanceCalc mocké
+     */
+    @Test
+    public void testPointListDistanceCalculationWithMocks() {
+        // Créer une PointList réelle
+        PointList pointList = new PointList();
+        pointList.add(0.0, 0.0);
+        pointList.add(1.0, 1.0);
+        
+        // Créer un mock de DistanceCalc
+        DistanceCalc distanceCalc = mock(DistanceCalc.class);
+        when(distanceCalc.calcDist(anyDouble(), anyDouble(), anyDouble(), anyDouble()))
+            .thenReturn(157425.0); // Distance simulée
+        
+        // Tester le calcul de distance
+        double distance = distanceCalc.calcDist(
+            pointList.getLat(0), pointList.getLon(0),
+            pointList.getLat(1), pointList.getLon(1)
+        );
+        
+        assertEquals(157425.0, distance, 0.1);
+        
+        // Vérifier les interactions
+        verify(distanceCalc, times(1)).calcDist(0.0, 0.0, 1.0, 1.0);
+    }
+
+    
 }

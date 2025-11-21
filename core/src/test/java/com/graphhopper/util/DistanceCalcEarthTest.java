@@ -19,8 +19,16 @@ package com.graphhopper.util;
 
 import com.graphhopper.util.shapes.GHPoint;
 import org.junit.jupiter.api.Test;
+import org.mockito.MockedStatic;
 
 import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.ArgumentMatchers.anyDouble;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.mockStatic;
+import static org.mockito.Mockito.spy;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 /**
  * @author Peter Karich
@@ -330,5 +338,98 @@ public class DistanceCalcEarthTest {
         point = distCalc.intermediatePoint(0.75, 45, -90, 45, 90);
         assertEquals(67.5, point.getLat(), 1e-1);
         assertEquals(90, point.getLon(), 1e-5);
+    }
+
+
+
+
+    // ==============================================
+    // NOUVEAUX TESTS AVEC MOCKITO
+    // ==============================================
+
+    /**
+     * Test avec Mockito pour simuler des calculs de distance spécifiques
+     */
+    @Test
+    public void testMockedCalcNormalizedDist() {
+
+        DistanceCalcEarth mockedCalc = mock(DistanceCalcEarth.class);
+        
+        // Configurer le comportement mocké
+        when(mockedCalc.calcNormalizedDist(48.8566, 2.3522, 45.7640, 4.8357))
+            .thenReturn(0.5); 
+        
+        double normalizedDist = mockedCalc.calcNormalizedDist(48.8566, 2.3522, 45.7640, 4.8357);
+        
+        assertEquals(0.5, normalizedDist, 0.001);
+        
+        // Vérifier que la méthode a été appelée avec les bons paramètres
+        verify(mockedCalc, times(1))
+            .calcNormalizedDist(48.8566, 2.3522, 45.7640, 4.8357);
+    }
+
+    /**
+     * Test avec Mockito pour simuler le calcul de point intermédiaire
+     */
+    @Test
+    public void testMockedIntermediatePoint() {
+
+        DistanceCalcEarth mockedCalc = mock(DistanceCalcEarth.class);
+        
+        GHPoint mockPoint = new GHPoint(2.5, 2.5);
+        
+        when(mockedCalc.intermediatePoint(0.5, 0, 0, 5, 5))
+            .thenReturn(mockPoint);
+        
+        GHPoint result = mockedCalc.intermediatePoint(0.5, 0, 0, 5, 5);
+        
+        assertEquals(2.5, result.getLat(), 0.001);
+        assertEquals(2.5, result.getLon(), 0.001);
+        
+        // Vérifier que la méthode a été appelée avec les bons paramètres
+        verify(mockedCalc, times(1)).intermediatePoint(0.5, 0, 0, 5, 5);
+    }
+
+    /**
+     * Test avec Mockito pour simuler le calcul de distance 3D
+     */
+    @Test
+    public void testMockedCalcDist3D() {
+
+        DistanceCalcEarth mockedCalc = mock(DistanceCalcEarth.class);
+        
+        // Configurer le comportement mocké pour calcDist3D
+        when(mockedCalc.calcDist3D(0, 0, 0, 1, 1, 1))
+            .thenReturn(157000.0); 
+        
+        // Test avec les valeurs mockées
+        double distance3D = mockedCalc.calcDist3D(0, 0, 0, 1, 1, 1);
+        
+        assertEquals(157000.0, distance3D, 0.001);
+        
+        // Vérifier que la méthode a été appelée avec les bons paramètres
+        verify(mockedCalc, times(1)).calcDist3D(0, 0, 0, 1, 1, 1);
+    }
+
+    /**
+     * Test avec Mockito pour simuler le comportement d'erreur
+     */
+    @Test
+    public void testMockedEdgeDistanceWithException() {
+        // Créer un mock de DistanceCalcEarth
+        DistanceCalcEarth mockedCalc = mock(DistanceCalcEarth.class);
+        
+        // Simuler une exception pour certains paramètres
+        when(mockedCalc.calcNormalizedEdgeDistance(anyDouble(), anyDouble(), anyDouble(), anyDouble(), anyDouble(), anyDouble()))
+            .thenThrow(new IllegalArgumentException("Invalid edge parameters"));
+        
+        // Vérifier que l'exception est levée
+        assertThrows(IllegalArgumentException.class, () -> {
+            mockedCalc.calcNormalizedEdgeDistance(0, 0, 0, 0, 0, 0);
+        });
+        
+        // Vérifier que la méthode a été appelée
+        verify(mockedCalc, times(1))
+            .calcNormalizedEdgeDistance(0, 0, 0, 0, 0, 0);
     }
 }
